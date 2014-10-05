@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ElloShare</string>
+    <string name="title_activity_ello_share">ElloShareActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_ello_web_view_login">ElloWebViewLoginActivity</string>
+
+</resources>
