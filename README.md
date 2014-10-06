@@ -1,6 +1,8 @@
 elloshare
 =========
 
+Want to download and install ElloShare?  Get an APK [here](http://www.weatherlight.com/elloshare).
+
 ElloShare is a photo sharing app for Android.  It integrates with Gallery to make it easy to post images from your phone
 into Ello.
 
