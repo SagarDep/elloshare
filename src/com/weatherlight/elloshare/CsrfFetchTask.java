@@ -58,10 +58,6 @@ public class CsrfFetchTask extends AsyncTask<Void, Void, Void> {
       conn.setRequestProperty("accept-language", "en-US,en;q=0.8");
       conn.setRequestProperty("cache-control", "no-cache");
 
-      conn.setRequestProperty(
-          "user-agent",
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.94 Safari/537.36");
-
       int errorCode = conn.getResponseCode();
       Log.i(TAG, "Response code is: " + errorCode);
       String ello_cookie = conn.getHeaderField("Set-cookie");
@@ -105,6 +101,5 @@ public class CsrfFetchTask extends AsyncTask<Void, Void, Void> {
     }
     CookieManager cookieManager = CookieManager.getInstance();
     String cookie = cookieManager.getCookie("https://ello.co/enter");
-    // new ShareTask(context, null, "https://ello.co/api/v1/posts.json").execute();
   }
 }

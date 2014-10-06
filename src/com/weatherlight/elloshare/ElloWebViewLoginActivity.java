@@ -5,6 +5,7 @@ import org.xwalk.core.XWalkView;
 import org.xwalk.core.internal.XWalkCookieManager;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,12 +16,14 @@ public class ElloWebViewLoginActivity extends Activity {
 
   private static final String TAG = "ElloWebViewLoginActivity";
   private XWalkCookieManager cm;
+  private ProgressDialog dialog;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_ello_web_view_login);
     cm = new XWalkCookieManager();
     cm.setAcceptCookie(true);
+    dialog = new ProgressDialog(this);
   }
 
   @Override protected void onResume() {
@@ -41,17 +44,8 @@ public class ElloWebViewLoginActivity extends Activity {
       ElloWebViewLoginActivity.this.getSharedPreferences("ello_data", Context.MODE_PRIVATE).edit()
           .putString("csrf", value).commit();
       Log.i(TAG, "Login worked.  Closing activity.");
+      dialog.hide();
       ElloWebViewLoginActivity.this.finish();
-    }
-
-  }
-
-  private class ElloCookieScraper implements ValueCallback<String> {
-
-    @Override public void onReceiveValue(String value) {
-      Log.i(TAG, "Cookie scrape returns: " + value);
-      ElloWebViewLoginActivity.this.getSharedPreferences("ello_data", Context.MODE_PRIVATE).edit()
-          .putString("cookie", value).commit();
     }
 
   }
@@ -78,6 +72,12 @@ public class ElloWebViewLoginActivity extends Activity {
     }
 
     @Override public boolean shouldOverrideUrlLoading(XWalkView view, String url) {
+      if(url.endsWith("ello.co/friends")) {
+        dialog.setMessage("Logging in and getting CSRF Token...");
+        dialog.setCancelable(false);
+        dialog.show();
+
+      }
       return false;
     }
 
