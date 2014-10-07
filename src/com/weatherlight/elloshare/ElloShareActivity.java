@@ -1,8 +1,12 @@
 package com.weatherlight.elloshare;
 
 import android.app.Activity;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -54,10 +58,12 @@ public class ElloShareActivity extends Activity implements OnClickListener {
       Log.i(TAG, "Changing image view to " + imageUri);
 
       try {
-        Bitmap d = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-        int nh = (int)(d.getHeight() * (512.0 / d.getWidth()));
-        Bitmap scaled = Bitmap.createScaledBitmap(d, 512, nh, true);
-        iv.setImageBitmap(scaled);
+        /*
+         * Bitmap d = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri); int nh =
+         * (int)(d.getHeight() * (512.0 / d.getWidth())); Bitmap scaled = Bitmap.createScaledBitmap(d, 512, nh, true);
+         */
+
+        iv.setImageBitmap(getThumbnailBitmap(imageUri));
         iv.refreshDrawableState();
       } catch(Exception ex) {
         throw new RuntimeException(ex);
@@ -85,4 +91,37 @@ public class ElloShareActivity extends Activity implements OnClickListener {
     new ShareTask(this, fileUri).execute();
   }
 
+  private int getOrientation(Uri photoUri) {
+    /* it's on the external media. */
+    Cursor cursor = getContentResolver().query(photoUri, new String[] { MediaStore.Images.ImageColumns.ORIENTATION },
+        null, null, null);
+
+    if(cursor.getCount() != 1) {
+      return -1;
+    }
+
+    cursor.moveToFirst();
+    return cursor.getInt(0);
+  }
+
+  private Bitmap getThumbnailBitmap(Uri uri) {
+    String[] proj = { MediaStore.Images.Media._ID };
+
+    CursorLoader cursorLoader = new CursorLoader(this, uri, proj, null, null, null);
+    Cursor cursor = cursorLoader.loadInBackground();
+
+    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+
+    cursor.moveToFirst();
+    long imageId = cursor.getLong(column_index);
+
+    Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(getContentResolver(), imageId,
+        MediaStore.Images.Thumbnails.MINI_KIND, (BitmapFactory.Options)null);
+
+    int orientation = getOrientation(uri);
+    Matrix matrix = new Matrix();
+    matrix.postRotate(orientation);
+    bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+    return bitmap;
+  }
 }

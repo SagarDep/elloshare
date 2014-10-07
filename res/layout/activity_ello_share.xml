@@ -3,14 +3,16 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="fill_vertical|fill_horizontal"
     android:orientation="vertical"
     tools:context="com.weatherlight.elloshare.ElloShareActivity"
     tools:ignore="MergeRootFrame" >
 
     <ImageView
         android:id="@+id/photoImageView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="0.74"
         android:adjustViewBounds="true"
         android:maxHeight="1024dp"
         android:maxWidth="1024dp"

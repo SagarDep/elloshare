@@ -39,7 +39,7 @@ public class ShareTask extends AsyncTask<Void, Void, Void> {
 
   // can use UI thread here
   @Override protected void onPreExecute() {
-    this.dialog.setMessage("Loading...");
+    this.dialog.setMessage("Sharing...");
     this.dialog.setCancelable(false);
     this.dialog.show();
   }
