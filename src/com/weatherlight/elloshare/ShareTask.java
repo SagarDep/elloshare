@@ -47,6 +47,7 @@ public class ShareTask extends AsyncTask<Void, Void, Void> {
   @Override protected Void doInBackground(Void... arg0) {
 
     try {
+
       // First, get the direct upload metadata
       JSONObject metadata = getUploadMetaData();
 

@@ -6,7 +6,7 @@
     tools:context="com.weatherlight.elloshare.ElloWebViewLoginActivity"
     tools:ignore="MergeRootFrame" >
 
-    <org.xwalk.core.XWalkView
+    <WebView
         android:id="@+id/loginWebView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
