@@ -25,9 +25,9 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@android:style/Theme.Holo">
+        android:theme="@android:style/Theme.Holo" >
         <activity
-            android:name="com.weatherlight.elloshare.ElloShareActivity"
+            android:name=".ElloShareActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -45,13 +45,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.weatherlight.elloshare.LoginActivity"
+            android:name=".LoginActivity"
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
-            android:name="com.weatherlight.elloshare.ElloWebViewLoginActivity"
+            android:name=".ElloWebViewLoginActivity"
             android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name=".ImagePickerActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

@@ -13,6 +13,7 @@ import java.net.URL;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
@@ -25,16 +26,16 @@ import ch.boye.httpclientandroidlib.entity.ContentType;
 import ch.boye.httpclientandroidlib.entity.mime.MultipartEntityBuilder;
 
 public class ShareTask extends AsyncTask<Void, Void, Void> {
-  private Context context;
+  private Activity activity;
   private Uri fileUri;
   private final ProgressDialog dialog;
   private static final String TAG = "ShareTask";
 
-  public ShareTask(Context ctx, Uri file) {
+  public ShareTask(Activity act, Uri file) {
     super();
-    context = ctx;
+    activity = act;
     fileUri = file;
-    dialog = new ProgressDialog(context);
+    dialog = new ProgressDialog(activity);
   }
 
   // can use UI thread here
@@ -71,11 +72,11 @@ public class ShareTask extends AsyncTask<Void, Void, Void> {
       String signature = metadata.getString("signature");
       meb.addTextBody("signature", signature);
 
-      meb.addTextBody("Content-Type", context.getContentResolver().getType(fileUri));
+      meb.addTextBody("Content-Type", activity.getContentResolver().getType(fileUri));
 
       // Build up the post with the image reference in it...
 
-      InputStream is = context.getContentResolver().openInputStream(fileUri);
+      InputStream is = activity.getContentResolver().openInputStream(fileUri);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       int bytesRead = 0;
       while(bytesRead >= 0) {
@@ -84,7 +85,7 @@ public class ShareTask extends AsyncTask<Void, Void, Void> {
         if(bytesRead >= 0) baos.write(buffer, 0, bytesRead);
       }
 
-      meb.addBinaryBody("file", baos.toByteArray(), ContentType.create(context.getContentResolver().getType(fileUri)),
+      meb.addBinaryBody("file", baos.toByteArray(), ContentType.create(activity.getContentResolver().getType(fileUri)),
           getFilenameFromUri(fileUri));
 
       String amazonResponse = doMultipartPost(uploadUrl, meb.build());
@@ -115,8 +116,11 @@ public class ShareTask extends AsyncTask<Void, Void, Void> {
       doMultipartPost("https://ello.co/api/v1/posts.json", requestBody);
     } catch(Exception ex) {
       Log.e(TAG, "Error sharing image", ex);
+      this.dialog.setTitle("Sharing failed!");
     }
 
+    this.dialog.setTitle("Shared!");
+    activity.finish();
     return null;
   }
 
@@ -124,7 +128,7 @@ public class ShareTask extends AsyncTask<Void, Void, Void> {
     Cursor cursor = null;
     try {
       String[] proj = { MediaStore.Images.Media.DISPLAY_NAME };
-      cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+      cursor = activity.getContentResolver().query(contentUri, proj, null, null, null);
       int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME);
       cursor.moveToFirst();
       return cursor.getString(column_index);
@@ -210,11 +214,11 @@ public class ShareTask extends AsyncTask<Void, Void, Void> {
   }
 
   private String getCookie() {
-    return context.getSharedPreferences("ello_data", Context.MODE_PRIVATE).getString("cookie", "");
+    return activity.getSharedPreferences("ello_data", Context.MODE_PRIVATE).getString("cookie", "");
   }
 
   private String getCsrfToken() {
-    return context.getSharedPreferences("ello_data", Context.MODE_PRIVATE).getString("csrf", "");
+    return activity.getSharedPreferences("ello_data", Context.MODE_PRIVATE).getString("csrf", "");
   }
 
   private String readStream(InputStream in) {

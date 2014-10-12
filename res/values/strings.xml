@@ -6,5 +6,10 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_ello_web_view_login">ElloWebViewLoginActivity</string>
+    <string name="title_activity_image_picker">ImagePickerActivity</string>
+    <string name="ello_help_text">ElloShare shares images either directly from the Gallery or through the image picker.  
+    Tap on the button below to select an image to share, or use the sharing button in Gallery.</string>
+    <string name="open_image_picker">Open Image Picker</string>
+    <string name="image_picker_caption">Select a picture from Gallery.</string>
 
 </resources>
