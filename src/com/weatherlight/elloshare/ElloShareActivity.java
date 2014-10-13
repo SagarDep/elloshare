@@ -3,6 +3,7 @@ package com.weatherlight.elloshare;
 import android.app.Activity;
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,6 +22,7 @@ public class ElloShareActivity extends Activity implements OnClickListener {
 
   private static final String TAG = "ElloShareActivity";
   private Uri fileUri = null;
+  private boolean rotating = false;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -44,6 +46,11 @@ public class ElloShareActivity extends Activity implements OnClickListener {
         handleSendMultipleImages(intent); // Handle multiple images being sent
       }
     }
+  }
+
+  @Override public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    rotating = true;
   }
 
   @Override protected void onResume() {
@@ -74,8 +81,12 @@ public class ElloShareActivity extends Activity implements OnClickListener {
       // CookieManager cookieManager = CookieManager.getInstance();
       // String cookie = cookieManager.getCookie("https://ello.co/enter");
       // if(cookie == null) {
-      Intent startIntent = new Intent(this, ElloWebViewLoginActivity.class);
-      startActivity(startIntent);
+      if(!rotating) {
+        Intent startIntent = new Intent(this, ElloWebViewLoginActivity.class);
+        startActivity(startIntent);
+      } else {
+        rotating = false;
+      }
       // }
     }
   }

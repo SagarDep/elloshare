@@ -3,6 +3,7 @@ package com.weatherlight.elloshare;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.CookieManager;
@@ -32,9 +33,18 @@ public class ElloWebViewLoginActivity extends Activity {
     wv.setWebViewClient(new ElloLoginWebViewClient());
     wv.setWebChromeClient(new ElloCsrfScraper());
     wv.getSettings().setJavaScriptEnabled(true);
-    wv.loadUrl("https://ello.co/enter");
+    if(wv.getUrl() != null && wv.getUrl().startsWith("https://ello.co")) {
+      Log.i(TAG, "URL: " + wv.getUrl());
+      wv.reload();
+    } else {
+      wv.loadUrl("https://ello.co/enter");
+    }
     CookieManager.getInstance().setAcceptCookie(true);
 
+  }
+
+  @Override public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
   }
 
   private class ElloCsrfScraper extends WebChromeClient {

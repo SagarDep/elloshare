@@ -28,7 +28,8 @@
         android:theme="@android:style/Theme.Holo" >
         <activity
             android:name=".ElloShareActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 
@@ -45,13 +46,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
-            android:label="@string/title_activity_login"
-            android:windowSoftInputMode="adjustResize|stateVisible" >
-        </activity>
-        <activity
             android:name=".ElloWebViewLoginActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:configChanges="orientation|screenSize" >
         </activity>
         <activity
             android:name=".ImagePickerActivity"
