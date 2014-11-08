@@ -18,7 +18,15 @@
         android:maxWidth="1024dp"
         android:src="@drawable/ic_launcher" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="4dip"
+            android:layout_marginBottom="4dip"
+            android:layout_marginTop="4dip"
+            android:background="?android:attr/dividerHorizontal" />
+
     <Button
+		android:background="?android:attr/selectableItemBackground"
         android:id="@+id/shareButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
