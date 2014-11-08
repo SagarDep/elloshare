@@ -19,9 +19,12 @@
         android:text="@string/ello_help_text" />
 
     <View
-        android:layout_width="fill_parent"
-        android:layout_height="2dp"
-        android:background="#c0c0c0" />
+        android:layout_width="match_parent"
+        android:layout_height="4dip"
+        android:layout_marginBottom="4dip"
+        android:layout_marginTop="4dip"
+        android:background="?android:attr/dividerHorizontal" />
+
 
     <LinearLayout
         android:layout_width="match_parent"
