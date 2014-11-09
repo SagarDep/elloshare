@@ -1,6 +1,8 @@
 package com.weatherlight.elloshare;
 
-import android.app.Activity;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -11,14 +13,17 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 
-public class ElloShareActivity extends Activity implements OnClickListener {
+
+public class ElloShareActivity extends ActionBarActivity implements OnClickListener {
 
   private static final String TAG = "ElloShareActivity";
   private Uri fileUri = null;
@@ -70,8 +75,11 @@ public class ElloShareActivity extends Activity implements OnClickListener {
          * (int)(d.getHeight() * (512.0 / d.getWidth())); Bitmap scaled = Bitmap.createScaledBitmap(d, 512, nh, true);
          */
 
-        iv.setImageBitmap(getThumbnailBitmap(imageUri));
+        Bitmap pic = getThumbnailBitmap(imageUri);
+
+        iv.setImageBitmap(pic);
         iv.refreshDrawableState();
+
       } catch(Exception ex) {
         throw new RuntimeException(ex);
       }
@@ -99,7 +107,35 @@ public class ElloShareActivity extends Activity implements OnClickListener {
     CookieManager cookieManager = CookieManager.getInstance();
     String cookie = cookieManager.getCookie("https://ello.co/enter");
     Log.i(TAG, "Starting cookie: " + cookie);
-    new ShareTask(this, fileUri).execute();
+    EditText editBox = (EditText) findViewById(R.id.tag);
+    new ShareTask(this, fileUri, editBox.getText().toString()).execute();
+  }
+
+
+  public void toggleTaggingBox(View v) {
+    final EditText tagBox = (EditText) findViewById(R.id.tag);
+
+// make the view visible and start the animation
+    Animator anim;
+
+    if (tagBox.getAlpha() == 0) {
+      anim = ObjectAnimator.ofFloat(tagBox, "alpha", 1f);
+    } else {
+      anim = ObjectAnimator.ofFloat(tagBox, "alpha", 0f);
+      tagBox.getText().clear();
+    }
+    anim.addListener(new AnimatorListenerAdapter() {
+      @Override
+      public void onAnimationEnd(Animator animation) {
+        super.onAnimationEnd(animation);
+        if (tagBox.getAlpha() == 0f) {
+          tagBox.setEnabled(false);
+        } else {
+          tagBox.setEnabled(true);
+        }
+      }
+    });
+    anim.start();
   }
 
   private int getOrientation(Uri photoUri) {

@@ -11,5 +11,6 @@
     Tap on the button below to select an image to share, or use the sharing button in Gallery.</string>
     <string name="open_image_picker">Open Image Picker</string>
     <string name="image_picker_caption">Select a picture from Gallery.</string>
+    <string name="add_caption">Add a caption</string>
 
 </resources>

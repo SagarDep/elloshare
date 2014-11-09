@@ -1,5 +1,17 @@
 package com.weatherlight.elloshare;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.provider.MediaStore;
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -10,31 +22,22 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.provider.MediaStore;
-import android.util.Log;
 import ch.boye.httpclientandroidlib.HttpEntity;
 import ch.boye.httpclientandroidlib.entity.ContentType;
 import ch.boye.httpclientandroidlib.entity.mime.MultipartEntityBuilder;
 
 public class ShareTask extends AsyncTask<Void, Void, Void> {
+  private static final String TAG = "ShareTask";
+  private final ProgressDialog dialog;
   private Activity activity;
   private Uri fileUri;
-  private final ProgressDialog dialog;
-  private static final String TAG = "ShareTask";
+  private String tag;
 
-  public ShareTask(Activity act, Uri file) {
+  public ShareTask(Activity act, Uri file, String tag) {
     super();
     activity = act;
     fileUri = file;
+    this.tag = tag;
     dialog = new ProgressDialog(activity);
   }
 
@@ -99,6 +102,7 @@ public class ShareTask extends AsyncTask<Void, Void, Void> {
       JSONArray ja = new JSONArray();
       JSONObject post = new JSONObject();
       JSONObject data = new JSONObject();
+      JSONObject tagData = new JSONObject();
 
       data.put("url", uploadUrl + "/" + key);
       data.put("via", "direct");
@@ -107,6 +111,12 @@ public class ShareTask extends AsyncTask<Void, Void, Void> {
       post.put("kind", "image");
       post.put("data", data);
       ja.put(post);
+
+      if (!"".equals(tag)) {
+        tagData.put("kind", "text");
+        tagData.put("data", tag);
+        ja.put(tagData);
+      }
 
       meb.addTextBody("unsanitized_body", ja.toString());
       HttpEntity requestBody = meb.build();
