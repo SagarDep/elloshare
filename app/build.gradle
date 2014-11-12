@@ -22,6 +22,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.0'
     compile 'com.android.support:palette-v7:+'
     compile 'com.github.traex.rippleeffect:library:1.2.2'
+    compile 'org.jsoup:jsoup:1.8.1'
     compile files('libs/httpclientandroidlib-1.2.0.jar')
-    compile files('libs/jsoup-1.8.1.jar')
 }
