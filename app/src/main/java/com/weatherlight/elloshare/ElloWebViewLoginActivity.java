@@ -57,6 +57,8 @@ public class ElloWebViewLoginActivity extends Activity {
           .putString("csrf", value).commit();
       Log.i(TAG, "Login worked.  Closing activity.");
       dialog.hide();
+      view.stopLoading();
+      view.destroy();
       ElloWebViewLoginActivity.this.finish();
       return true;
     }
