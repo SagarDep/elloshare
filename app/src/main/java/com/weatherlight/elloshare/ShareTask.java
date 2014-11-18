@@ -1,13 +1,16 @@
 package com.weatherlight.elloshare;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,24 +31,31 @@ import ch.boye.httpclientandroidlib.entity.mime.MultipartEntityBuilder;
 
 public class ShareTask extends AsyncTask<Void, Void, Void> {
   private static final String TAG = "ShareTask";
-  private final ProgressDialog dialog;
   private Activity activity;
   private Uri fileUri;
   private String tag;
+  private int notificationId;
+  private NotificationManager notificationManager;
 
   public ShareTask(Activity act, Uri file, String tag) {
     super();
     activity = act;
     fileUri = file;
     this.tag = tag;
-    dialog = new ProgressDialog(activity);
+    notificationId = (file.toString() + Long.toString(System.currentTimeMillis())).hashCode();
+    notificationManager = (NotificationManager)activity.getSystemService(Context.NOTIFICATION_SERVICE);
   }
 
   // can use UI thread here
   @Override protected void onPreExecute() {
-    this.dialog.setMessage("Sharing...");
-    this.dialog.setCancelable(false);
-    this.dialog.show();
+
+    Toast toast = Toast.makeText(activity, "Sharing...", Toast.LENGTH_SHORT);
+    toast.show();
+
+    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(activity);
+    notificationBuilder = notificationBuilder.setSmallIcon(android.R.drawable.stat_sys_download).setContentTitle("Sharing photo").setContentText("Sharing "+fileUri.getLastPathSegment()).setOngoing(true);
+
+    notificationManager.notify(notificationId, notificationBuilder.build());
   }
 
   @Override protected Void doInBackground(Void... arg0) {
@@ -126,10 +136,11 @@ public class ShareTask extends AsyncTask<Void, Void, Void> {
       doMultipartPost("https://ello.co/api/v1/posts.json", requestBody);
     } catch(Exception ex) {
       Log.e(TAG, "Error sharing image", ex);
-      this.dialog.setTitle("Sharing failed!");
+      notificationManager.cancel(notificationId);
+      NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(activity);
+      notificationBuilder = notificationBuilder.setSmallIcon(android.R.drawable.stat_notify_error).setContentTitle("Sharing fialed").setContentText("Error sharing "+fileUri.getLastPathSegment());
+      notificationManager.notify(notificationId, notificationBuilder.build());
     }
-
-    this.dialog.setTitle("Shared!");
     activity.finish();
     return null;
   }
@@ -255,9 +266,9 @@ public class ShareTask extends AsyncTask<Void, Void, Void> {
   }
 
   @Override protected void onPostExecute(Void result) {
-
-    if(this.dialog.isShowing()) {
-      this.dialog.dismiss();
-    }
+    notificationManager.cancel(notificationId);
+    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(activity);
+    notificationBuilder = notificationBuilder.setSmallIcon(android.R.drawable.stat_sys_download_done).setContentTitle("Shared on Ello").setContentText("Shared "+fileUri.getLastPathSegment()+" on Ello");
+    notificationManager.notify(notificationId, notificationBuilder.build());
   }
 }
