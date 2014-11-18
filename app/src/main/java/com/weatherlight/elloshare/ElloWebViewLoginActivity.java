@@ -16,14 +16,12 @@ public class ElloWebViewLoginActivity extends Activity {
 
   private static final String TAG = "ElloWebViewLoginActivity";
   private CookieManager cm;
-  private ProgressDialog dialog;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_ello_web_view_login);
     cm = CookieManager.getInstance();
     cm.setAcceptCookie(true);
-    dialog = new ProgressDialog(this);
   }
 
   @Override protected void onResume() {
@@ -55,10 +53,7 @@ public class ElloWebViewLoginActivity extends Activity {
         Log.i(TAG, "Cookie manager returns: " + cookie);
         ElloWebViewLoginActivity.this.getSharedPreferences("ello_data", Context.MODE_PRIVATE).edit()
                 .putString("cookie", cookie).commit();
-
-        CsrfFetchTask task = new CsrfFetchTask(ElloWebViewLoginActivity.this, cookie);
-        task.execute();
-        ElloWebViewLoginActivity.this.setVisible(false);
+        ElloWebViewLoginActivity.this.finish();
         return true;
       } else {
         return false;

@@ -14,6 +14,10 @@ import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -24,6 +28,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import ch.boye.httpclientandroidlib.HttpEntity;
 import ch.boye.httpclientandroidlib.entity.ContentType;
@@ -62,6 +68,7 @@ public class ShareTask extends AsyncTask<Void, Void, Void> {
 
     try {
 
+      doCsrfFetch();
       // First, get the direct upload metadata
       JSONObject metadata = getUploadMetaData();
 
@@ -271,4 +278,47 @@ public class ShareTask extends AsyncTask<Void, Void, Void> {
     notificationBuilder = notificationBuilder.setSmallIcon(android.R.drawable.stat_sys_download_done).setContentTitle("Shared on Ello").setContentText("Shared "+fileUri.getLastPathSegment()+" on Ello");
     notificationManager.notify(notificationId, notificationBuilder.build());
   }
+
+  private void doCsrfFetch () {
+    HttpsURLConnection conn = null;
+    try {
+      URL url = new URL("https://ello.co/");
+      conn = (HttpsURLConnection)url.openConnection();
+      conn.setInstanceFollowRedirects(true);
+      // Use a GET method.
+      conn.setRequestMethod("GET");
+      // Allow Inputs
+      conn.setDoInput(true);
+      // conn.setDoOutput(true);
+      // Don't use a cached copy.
+      conn.setUseCaches(false);
+      conn.setRequestProperty("cookie", getCookie());
+      conn.setRequestProperty("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+      conn.setRequestProperty("accept-language", "en-US,en;q=0.8");
+      conn.setRequestProperty("cache-control", "no-cache");
+
+      int errorCode = conn.getResponseCode();
+      Log.i(TAG, "Response code is: " + errorCode);
+
+      Document doc = Jsoup.parse(conn.getInputStream(), null, "https://ello.co/friends/");
+
+      String html = doc.html();
+
+      Elements metaElems = doc.select("meta");
+      for(Element elem : metaElems) {
+        if(elem.hasAttr("name")) {
+          if("csrf-token".equals(elem.attr("name"))) {
+            String result = elem.attr("content");
+            activity.getSharedPreferences("ello_data", Context.MODE_PRIVATE).edit().putString("csrf", result).commit();
+            Log.i(TAG, "CSRF token is " + result);
+          }
+        }
+      }
+
+    } catch(Exception e) {
+      Log.e(TAG, "Error in http connection ", e);
+    }
+
+  }
+
 }
