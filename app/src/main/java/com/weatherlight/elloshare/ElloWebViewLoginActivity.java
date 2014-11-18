@@ -31,7 +31,6 @@ public class ElloWebViewLoginActivity extends Activity {
 
     WebView wv = (WebView)findViewById(R.id.loginWebView);
     wv.setWebViewClient(new ElloLoginWebViewClient());
-    wv.setWebChromeClient(new ElloCsrfScraper());
     wv.getSettings().setJavaScriptEnabled(true);
     if(wv.getUrl() != null && wv.getUrl().startsWith("https://ello.co")) {
       Log.i(TAG, "URL: " + wv.getUrl());
@@ -47,45 +46,23 @@ public class ElloWebViewLoginActivity extends Activity {
     super.onConfigurationChanged(newConfig);
   }
 
-  private class ElloCsrfScraper extends WebChromeClient {
-
-    @Override public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-      String value = message;
-      Log.i(TAG, "CSRF scrape returns: " + value);
-      value = value.replace("\"", "");
-      ElloWebViewLoginActivity.this.getSharedPreferences("ello_data", Context.MODE_PRIVATE).edit()
-          .putString("csrf", value).commit();
-      Log.i(TAG, "Login worked.  Closing activity.");
-      dialog.hide();
-      view.stopLoading();
-      view.destroy();
-      ElloWebViewLoginActivity.this.finish();
-      return true;
-    }
-
-  }
-
   private class ElloLoginWebViewClient extends WebViewClient {
-
-    @Override public void onPageFinished(WebView view, String url) {
-      Log.i(TAG, "Page finished loading");
-      if(url.endsWith("ello.co/friends")) {
-        String cookie = cm.getCookie("https://ello.co/friends/");
-        Log.i(TAG, "Cookie manager returns: " + cookie);
-        ElloWebViewLoginActivity.this.getSharedPreferences("ello_data", Context.MODE_PRIVATE).edit()
-            .putString("cookie", cookie).commit();
-        view.loadUrl("javascript:alert(eval(\"var metaTags=document.getElementsByTagName(\\\"meta\\\");var fbAppIdContent = \\\"\\\";for (var i = 0; i < metaTags.length; i++) {if (metaTags[i].getAttribute(\\\"name\\\") == \\\"csrf-token\\\") {fbAppIdContent = metaTags[i].getAttribute(\\\"content\\\"); break; } }\"));");
-      }
-    }
 
     @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
       if(url.endsWith("ello.co/friends")) {
-        dialog.setMessage("Logging in and getting CSRF Token...");
-        dialog.setCancelable(false);
-        dialog.show();
 
+        String cookie = cm.getCookie("https://ello.co/friends");
+        Log.i(TAG, "Cookie manager returns: " + cookie);
+        ElloWebViewLoginActivity.this.getSharedPreferences("ello_data", Context.MODE_PRIVATE).edit()
+                .putString("cookie", cookie).commit();
+
+        CsrfFetchTask task = new CsrfFetchTask(ElloWebViewLoginActivity.this, cookie);
+        task.execute();
+        ElloWebViewLoginActivity.this.setVisible(false);
+        return true;
+      } else {
+        return false;
       }
-      return false;
     }
 
   }

@@ -22,11 +22,11 @@ import android.webkit.CookieManager;
 public class CsrfFetchTask extends AsyncTask<Void, Void, Void> {
 
   private static final String TAG = "CsrfFetchTask";
-  private Context context;
+  private ElloWebViewLoginActivity context;
   private final ProgressDialog dialog;
   private String cookie;
 
-  public CsrfFetchTask(Context ctx, String ck) {
+  public CsrfFetchTask(ElloWebViewLoginActivity ctx, String ck) {
     super();
     context = ctx;
     cookie = ck;
@@ -43,8 +43,9 @@ public class CsrfFetchTask extends AsyncTask<Void, Void, Void> {
   @Override protected Void doInBackground(Void... arg0) {
     HttpsURLConnection conn = null;
     try {
-      URL url = new URL("https://ello.co/friends/");
+      URL url = new URL("https://ello.co/");
       conn = (HttpsURLConnection)url.openConnection();
+      conn.setInstanceFollowRedirects(true);
       // Use a GET method.
       conn.setRequestMethod("GET");
       // Allow Inputs
@@ -54,27 +55,15 @@ public class CsrfFetchTask extends AsyncTask<Void, Void, Void> {
       conn.setUseCaches(false);
       conn.setRequestProperty("cookie", cookie);
       conn.setRequestProperty("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-      // conn.setRequestProperty("accept-encoding", "gzip,deflate");
       conn.setRequestProperty("accept-language", "en-US,en;q=0.8");
       conn.setRequestProperty("cache-control", "no-cache");
 
       int errorCode = conn.getResponseCode();
       Log.i(TAG, "Response code is: " + errorCode);
-      String ello_cookie = conn.getHeaderField("Set-cookie");
-      ello_cookie = ello_cookie.substring(0, ello_cookie.indexOf(';'));
-      Log.i(TAG, "Set-cookie: " + ello_cookie);
-      context.getSharedPreferences("ello_data", Context.MODE_PRIVATE).edit().putString("cookie", ello_cookie).commit();
 
       Document doc = Jsoup.parse(conn.getInputStream(), null, "https://ello.co/friends/");
 
       String html = doc.html();
-      FileOutputStream fos = new FileOutputStream(new File("/sdcard/out.html"));
-      BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-      bw.write(html);
-      bw.flush();
-      bw.close();
-      fos.flush();
-      fos.close();
 
       Elements metaElems = doc.select("meta");
       for(Element elem : metaElems) {
@@ -99,7 +88,7 @@ public class CsrfFetchTask extends AsyncTask<Void, Void, Void> {
     if(this.dialog.isShowing()) {
       this.dialog.dismiss();
     }
-    CookieManager cookieManager = CookieManager.getInstance();
-    String cookie = cookieManager.getCookie("https://ello.co/enter");
+
+    context.finish();
   }
 }

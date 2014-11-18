@@ -3,6 +3,7 @@ package com.weatherlight.elloshare;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -92,6 +93,12 @@ public class ElloShareActivity extends ActionBarActivity implements OnClickListe
       if(!rotating) {
         Intent startIntent = new Intent(this, ElloWebViewLoginActivity.class);
         startActivity(startIntent);
+        //String cookie = getSharedPreferences("ello_data", Context.MODE_PRIVATE).getString("cookie", "");
+        //if (!"".equals(cookie)) {
+        //  CsrfFetchTask task = new CsrfFetchTask(this, cookie);
+
+        //  task.execute();
+        //}
       } else {
         rotating = false;
       }
