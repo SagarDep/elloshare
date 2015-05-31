@@ -47,18 +47,16 @@ public class ElloWebViewLoginActivity extends Activity {
   private class ElloLoginWebViewClient extends WebViewClient {
 
     @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
-      if(url.endsWith("ello.co/friends")) {
+      if (url.endsWith("ello.co/friends")) {
 
         String cookie = cm.getCookie("https://ello.co/friends");
         Log.i(TAG, "Cookie manager returns: " + cookie);
         ElloWebViewLoginActivity.this.getSharedPreferences("ello_data", Context.MODE_PRIVATE).edit()
                 .putString("cookie", cookie).commit();
         ElloWebViewLoginActivity.this.finish();
-        return true;
-      } else {
-        return false;
+        //return true;
       }
+        return false;
     }
-
   }
 }

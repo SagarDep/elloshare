@@ -13,8 +13,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,11 +27,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 
-public class ElloShareActivity extends ActionBarActivity implements OnClickListener {
+public class ElloShareActivity extends AppCompatActivity implements OnClickListener {
 
   private static final String TAG = "ElloShareActivity";
   private Uri fileUri = null;
   private boolean rotating = false;
+  private Handler handler;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -40,6 +44,7 @@ public class ElloShareActivity extends ActionBarActivity implements OnClickListe
     Intent intent = getIntent();
     String action = intent.getAction();
     String type = intent.getType();
+    handler = new Handler();
 
     this.findViewById(R.id.shareButton).setOnClickListener(this);
 
@@ -91,8 +96,13 @@ public class ElloShareActivity extends ActionBarActivity implements OnClickListe
       // String cookie = cookieManager.getCookie("https://ello.co/enter");
       // if(cookie == null) {
       if(!rotating) {
-        Intent startIntent = new Intent(this, ElloWebViewLoginActivity.class);
-        startActivity(startIntent);
+
+        handler.postDelayed(new Runnable() {
+          public void run() {
+            Intent startIntent = new Intent(ElloShareActivity.this, ElloWebViewLoginActivity.class);
+            startActivity(startIntent);
+          }
+        }, 250);
         //String cookie = getSharedPreferences("ello_data", Context.MODE_PRIVATE).getString("cookie", "");
         //if (!"".equals(cookie)) {
         //  CsrfFetchTask task = new CsrfFetchTask(this, cookie);
@@ -175,7 +185,9 @@ public class ElloShareActivity extends ActionBarActivity implements OnClickListe
     int orientation = getOrientation(uri);
     Matrix matrix = new Matrix();
     matrix.postRotate(orientation);
-    bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+    if (bitmap != null) {
+      bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+    }
     return bitmap;
   }
 }

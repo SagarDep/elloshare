@@ -41,26 +41,19 @@
                 android:imeOptions="actionDone"
                 android:paddingLeft="10dp" />
 
-            <com.andexert.library.RippleView
-                android:id="@+id/fab"
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/tagButton"
                 android:layout_width="?android:actionBarSize"
                 android:layout_height="?android:actionBarSize"
-                android:layout_margin="5dp"
-                android:onClick="toggleTaggingBox"
-                ripple:rv_centered="true">
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:background="@drawable/circle"
+                android:elevation="3dip"
+                android:padding="10dp"
+                android:src="@android:drawable/ic_menu_edit"
+                android:onClick="toggleTaggingBox"/>
 
-                <ImageView
-                    android:id="@+id/tagButton"
-                    android:layout_width="?android:actionBarSize"
-                    android:layout_height="?android:actionBarSize"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerInParent="true"
-                    android:background="@drawable/circle"
-                    android:elevation="3dip"
-                    android:padding="10dp"
-                    android:src="@android:drawable/ic_menu_edit" />
-
-            </com.andexert.library.RippleView>
         </LinearLayout>
 
     </RelativeLayout>
@@ -76,7 +69,6 @@
         android:id="@+id/shareButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
         android:text="Share" />
 
 </LinearLayout>
